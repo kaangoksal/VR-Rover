@@ -1,9 +1,11 @@
 import abc
 import RPi.GPIO as GPIO
-from Wheel import Wheel
 
-class rp_wheel(Wheel):
+
+class rp_wheel(object):
     def __init__(self, A, B, PWM_Freq):
+        GPIO.setwarnings(False)
+        GPIO.setmode(GPIO.BCM)
         self.pinA = A
         self.pinB = B
         self.PWM_Freq = PWM_Freq

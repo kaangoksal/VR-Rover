@@ -36,12 +36,7 @@ def get_lan_ip():
     return ip
 
 
-while get_lan_ip() == "127.0.1.1":
-    print("Wifi problem")
-
-print(get_lan_ip())
-
-UDP_IP = get_lan_ip()
+UDP_IP = "192.168.8.174"
 UDP_PORT = 5005
 
 sock = socket.socket(socket.AF_INET,  # Internet
@@ -53,4 +48,5 @@ while True:
     print("received message:", data, addr)
     received = data
     print(len(data))
+    parsedjson
 
