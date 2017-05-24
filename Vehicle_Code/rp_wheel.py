@@ -21,12 +21,23 @@ class rp_wheel(object):
 
     def setspeed(self, thr):
         if thr > 0:
-            self.pwmB.ChangeDutyCycle(0)
-            self.pwmA.ChangeDutyCycle(thr)
+            print("forward")
+            # self.pwmB.ChangeDutyCycle(0)
+            # self.pwmA.ChangeDutyCycle(thr)
+            self.pwmB.start(0)
+            self.pwmA.start(thr)
         elif thr < 0:
+            print("reverse")
             thr = abs(thr)
-            self.pwmA.ChangeDutyCycle(0)
-            self.pwmB.ChangeDutyCycle(thr)
+            # self.pwmA.ChangeDutyCycle(0)
+            # self.pwmB.ChangeDutyCycle(thr)
+            self.pwmA.start(0)
+            self.pwmB.start(thr)
         else:
-            self.pwmB.ChangeDutyCycle(100)
-            self.pwmB.ChangeDutyCycle(100)
+            print("stop")
+            self.pwmA.ChangeDutyCycle(0)
+            self.pwmB.ChangeDutyCycle(0)
+            # self.pwmA.stop()
+            # self.pwmB.stop()
+            # GPIO.output(self.pinA, GPIO.LOW)
+            # GPIO.output(self.pinB, GPIO.LOW)
