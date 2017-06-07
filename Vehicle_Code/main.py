@@ -1,17 +1,14 @@
-from rp_wheel import rp_wheel
+
 import time
 import os
 import socket
 import fcntl
 import struct
 import json
+import serial
 
-wheeldriver = rp_wheel
-
-PWM_Freq = 490
-leftwheel = wheeldriver(17, 23, PWM_Freq)
-rightwheel = wheeldriver(27, 22, PWM_Freq)
-
+#Connection with the raspberryPi
+port = serial.Serial("/dev/ttyAMA0", baudrate=9600, timeout=3.0)
 
 def get_ip_address(ifname):
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -43,8 +40,6 @@ sock.bind((UDP_IP, UDP_PORT))
 
 while True:
     print("started")
-    leftwheel.setspeed(0)
-    rightwheel.setspeed(0)
     data, addr = sock.recvfrom(1024)  # buffer size is 1024 bytes
     print("here is data", data)
     print("received message:", data, addr)
@@ -53,9 +48,13 @@ while True:
     parsedjson = json.loads(received)
     leftthr = parsedjson["leftmotor"]
     rightthr = parsedjson["rightmotor"]
-    leftwheel.setspeed(leftthr)
-    rightwheel.setspeed(rightthr)
-    time.sleep(0.1)
+
+    arduino_json = json.dump({'left': leftthr, 'right': rightthr})
+    port.write(arduino_json)
+
+
+
+
 
 
 
