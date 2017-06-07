@@ -45,11 +45,11 @@ while True:
            
             print "leftwheel" + str(leftwheel)
             print "rightwheel" + str(rightwheel)
-            dictlocal =  {'leftmotor': leftwheel, 'rightmotor': rightwheel}
+            dictlocal =  {'leftmotor': int(leftwheel), 'rightmotor': int(rightwheel)}
             returnstring = json.dumps(dictlocal, sort_keys=True, indent=4, separators=(',', ': '))
 	    print returnstring
             sock.sendall(returnstring + "\n")
-            time.sleep(0.4)
+            time.sleep(0.2)
 
 
 

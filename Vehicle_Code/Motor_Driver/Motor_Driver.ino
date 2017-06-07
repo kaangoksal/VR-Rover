@@ -2,18 +2,26 @@
 
 
 /*
-This is how you interact with the motordriver, there are two motors
-left and right 100 means full forward and anything negative is backwards.
-This should be simple enough....
+  This is how you interact with the motordriver, there are two motors
+  left and right 100 means full forward and anything negative is backwards.
+  This should be simple enough....
 
-{
+  {
   "left": 100,
   "right": 100
-}
+  }
 
 */
 
+//#define DEBUG
 
+#ifdef DEBUG
+#define DEBUG_PRINTLN(x)  Serial.println (x)
+#define DEBUG_PRINT(x) Serial.print(x)
+#else
+#define DEBUG_PRINTLN(x)
+#define DEBUG_PRINT(x)
+#endif
 
 #include <ArduinoJson.h>
 
@@ -23,11 +31,12 @@ int IN3 = 10;
 int IN4 = 9;
 
 int motor_command_delay = 200;
+int min_possible_pwm = 102; //motor does not turn before this
 
 void setup() {
   Serial.begin(9600);
-  Serial.println("Program Starts");
-  
+  DEBUG_PRINTLN("Program Starts");
+
   Serial1.begin(9600); //This is for communicating with RaspberryPi
 
   pinMode(IN1, OUTPUT);  //sağ motor - right motor
@@ -43,14 +52,15 @@ void loop() {
   int i = 0;
   while (Serial1.available() > 0) {
     input[i++] = (char)Serial1.read();
-    delay(5);
+    delay(2);
   }
 
   if (i > 0) {
     for (int j = 0; j < i; j++) {
-      Serial.print((char)input[j]);
+      DEBUG_PRINT((char)input[j]);
     }
-    Serial.println("");
+    DEBUG_PRINTLN("");
+    DEBUG_PRINTLN(i);
 
     const size_t bufferSize = JSON_OBJECT_SIZE(2) + 30;
     DynamicJsonBuffer jsonBuffer(bufferSize);
@@ -62,8 +72,8 @@ void loop() {
     int left = root["left"]; // 100
     int right = root["right"]; // 100
 
-    Serial.println(left);
-    Serial.println(right);
+    DEBUG_PRINTLN(left);
+    DEBUG_PRINTLN(right);
     motorleft(left);
     motorright(right);
     delay(motor_command_delay);
@@ -78,19 +88,21 @@ void loop() {
 void motorleft(int throttle) {
   if (throttle < 0) {
     throttle = throttle * -1;
-    throttle = map(throttle, 0, 100, 0, 255);
+    //    throttle = map(throttle, 0, 100, 0, 255);
+    throttle = scale_throttle_pwm(throttle);
 
     digitalWrite(IN2, LOW);
     analogWrite(IN1, throttle);
-//    digitalWrite(IN1, HIGH);
   } else if (throttle > 0) {
-    
-    throttle = map(throttle, 0, 100, 0, 255);
+
+//    throttle = map(throttle, 0, 100, 0, 255);
+
+    throttle = scale_throttle_pwm(throttle);
     digitalWrite(IN1, LOW);
     analogWrite(IN2, throttle);
-    Serial.print("Motorleft thr forward ");
-    Serial.println(throttle);
-//    digitalWrite(IN2, HIGH);
+    DEBUG_PRINT("Motorleft thr forward ");
+    DEBUG_PRINTLN(throttle);
+    //    digitalWrite(IN2, HIGH);
 
   } else {
     digitalWrite(IN1, LOW);
@@ -102,19 +114,21 @@ void motorleft(int throttle) {
 void motorright(int throttle) {
   if (throttle < 0) {
     throttle = throttle * -1;
-    throttle = map(throttle, 0, 100, 0, 255);
+//    throttle = map(throttle, 0, 100, 0, 255);
+    throttle = scale_throttle_pwm(throttle);
 
     digitalWrite(IN4, LOW);
     analogWrite(IN3, throttle);
-//    digitalWrite(IN3, HIGH);
+    //    digitalWrite(IN3, HIGH);
   } else if (throttle > 0) {
-    
-    throttle = map(throttle, 0, 100, 0, 255);
+
+//    throttle = map(throttle, 0, 100, 0, 255);
+    throttle = scale_throttle_pwm(throttle);
     digitalWrite(IN3, LOW);
     analogWrite(IN4, throttle);
-    Serial.print("Motorright thr forward ");
-    Serial.println(throttle);
-//    digitalWrite(IN4, HIGH);
+    DEBUG_PRINT("Motorright thr forward ");
+    DEBUG_PRINTLN(throttle);
+    //    digitalWrite(IN4, HIGH);
 
   } else {
     digitalWrite(IN4, LOW);
@@ -123,4 +137,9 @@ void motorright(int throttle) {
 
 
 }
+
+int scale_throttle_pwm(int throttle) {
+  return map(throttle, 0, 100, min_possible_pwm, 255);
+}
+
 
