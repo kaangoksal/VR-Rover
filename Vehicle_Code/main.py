@@ -49,7 +49,7 @@ while True:
     leftthr = parsedjson["leftmotor"]
     rightthr = parsedjson["rightmotor"]
 
-    arduino_json = json.dump({'left': leftthr, 'right': rightthr})
+    arduino_json = json.dumps({'left': leftthr, 'right': rightthr})
     port.write(arduino_json)
 
 
