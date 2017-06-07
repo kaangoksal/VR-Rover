@@ -51,7 +51,7 @@ while True:
 
     arduino_json = json.dumps({'left': leftthr, 'right': rightthr})
     port.write(arduino_json)
-
+    time.sleep(0.2)
 
 
 
