@@ -38,11 +38,17 @@ while True:
         #print pygame.joystick.Joystick(0).get_axis(3)
         #print pygame.joystick.Joystick(0).get_axis(4)
         #print pygame.joystick.Joystick(0).get_axis(5) #one
+	
         rightwheel = ((pygame.joystick.Joystick(0).get_axis(5) * 100) + 100)/2
+	if pygame.joystick.Joystick(0).get_button(5) == 1:
+		rightwheel = rightwheel * -1
+	
         leftwheel = ((pygame.joystick.Joystick(0).get_axis(2) * 100) + 100)/2
+	if pygame.joystick.Joystick(0).get_button(4) == 1:
+		leftwheel = leftwheel * -1
         
-        if rightwheel > 10 or leftwheel > 10:
-           
+        if abs(rightwheel) > 10 or abs(leftwheel) > 10:
+            
             print "leftwheel" + str(leftwheel)
             print "rightwheel" + str(rightwheel)
             dictlocal =  {'leftmotor': int(leftwheel), 'rightmotor': int(rightwheel)}
